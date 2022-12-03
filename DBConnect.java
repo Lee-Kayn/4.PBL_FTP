@@ -6,7 +6,7 @@ public class DBConnect {
     public static Connection getConn(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/account_ftp","root","Smilodon54");
+            conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/account_ftp","root","Test");
         } catch (Exception e) {
             e.printStackTrace();
         }
