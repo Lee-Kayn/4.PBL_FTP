@@ -54,11 +54,14 @@ class transferfile extends Thread
             String sql="SELECT * from account where userName='"+use+"' and password='"+pass+"'";
             ResultSet rs=stmt.executeQuery(sql);
             int check=0;
+            String role="";
             while (rs.next()) {
                 check=1;
+                role=rs.getString("role");
             }
             if (check==1){
                 doutput.writeUTF("Success");
+                doutput.writeUTF(role);
                 System.out.println("User logged in successfully");
             }
             else{
