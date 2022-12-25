@@ -65,7 +65,8 @@ class transferfile extends Thread
                 System.out.println("User logged in successfully");
             }
             else{
-                doutput.writeUTF("Failure");
+                doutput.writeUTF("Fail");
+                doutput.writeUTF(role);
             }
             start();
         }
