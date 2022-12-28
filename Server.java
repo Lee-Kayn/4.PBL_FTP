@@ -24,8 +24,8 @@ public class Server {
         while(true)
         {
             System.out.println("Waiting for Connection ...");
-            transferfile t=new transferfile(soc.accept(),datasoc);
-
+            Socket socket = soc.accept();
+            transferfile t=new transferfile(socket,datasoc);
         }
     }
 }
@@ -199,6 +199,15 @@ class transferfile extends Thread
 
     }
 
+    void Disconnect() throws Exception{
+        DataInputStream datain;
+        DataOutputStream dataout;
+        dataSoc=DataSoc.accept();
+        datain=new DataInputStream(dataSoc.getInputStream());
+        dataout=new DataOutputStream(dataSoc.getOutputStream());
+        dataSoc.close();
+    }
+
     void Pwd() throws Exception{
         DataInputStream datain;
         DataOutputStream dataout;
@@ -271,9 +280,12 @@ class transferfile extends Thread
         doutput.writeUTF(String.valueOf(listofFiles.length));
         for (int i = 0; i < listofFiles.length; i++) {
             if (listofFiles[i].isFile()) {
-                doutput.writeUTF("File - " + listofFiles[i].getName());
+                doutput.writeUTF("1");
+                doutput.writeUTF(listofFiles[i].getName());
+                doutput.writeUTF(String.valueOf(listofFiles[i].length()));
             }
             else if (listofFiles[i].isDirectory()) {
+                doutput.writeUTF("2");
                 doutput.writeUTF("Dir -  "+ listofFiles[i].getName());
             }
         }
@@ -369,6 +381,7 @@ class transferfile extends Thread
                     System.out.println("\tDisconnect Command Received ...");
                     doutput.flush();
                     ClientSoc.close();
+                    Disconnect();
                     //System.exit(1);
                 }
                 else if (Command.compareTo("PWD")==0){
