@@ -318,6 +318,62 @@ class transferfile extends Thread
         File delfile = new File(dir, filename);
         delfile.delete();
     }
+
+    void deleteDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (! Files.isSymbolicLink(f.toPath())) {
+                    deleteDir(f);
+                }
+            }
+        }
+        file.delete();
+    }
+
+    public static boolean deleteDirr(File dir){
+        File[] files = dir.listFiles();
+        if(files != null){
+            for(File file : files){
+                if(file.isDirectory()){
+                    deleteDirr(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+        return dir.delete();
+    }
+
+    void delAllInDir() throws Exception{
+        DataInputStream datain;
+        DataOutputStream dataout;
+        dataSoc=DataSoc.accept();
+        datain=new DataInputStream(dataSoc.getInputStream());
+        dataout=new DataOutputStream(dataSoc.getOutputStream());
+        String filename=dinput.readUTF();
+        String dir=System.getProperty("user.dir");
+        File deldir = new File(dir, filename);
+        File[] AllIn = deldir.listFiles();
+        int countFile=0;
+        int countDir=0;
+        for(File file : AllIn) {
+            if(file.isDirectory()) {
+                countDir++;
+            } else
+                countFile++;
+        }
+        doutput.writeUTF(String.valueOf(countDir));
+        doutput.writeUTF(String.valueOf(countFile));
+        String Ok=dinput.readUTF();
+        if(Ok.compareTo("YES")==0){
+            deleteDirr(deldir);
+            doutput.writeUTF("true");
+        }else{
+            doutput.writeUTF("false");
+        }
+    }
+
     void setNewDir() throws Exception{
         DataInputStream datain;
         DataOutputStream dataout;
@@ -422,6 +478,11 @@ class transferfile extends Thread
                 else if (Command.compareTo("rmdir")==0){
                     System.out.println("\tRmdir Command Received ...");
                     deleteDir();
+                    continue;
+                }
+                else if (Command.compareTo("rmdirAll")==0){
+                    System.out.println("\tRmdir Command Received All...");
+                    delAllInDir();
                     continue;
                 }
             }
